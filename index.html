@@ -1016,6 +1016,35 @@ function resetDashboard() {
   document.getElementById('statusBadge').style.background = 'rgba(255,255,255,0.12)';
 }
 
+// ✅ AUTO-CARREGAR escalas.csv AO ABRIR O PAINEL
+window.addEventListener('DOMContentLoaded', function () {
+  const badge = document.getElementById('statusBadge');
+
+  if (badge) {
+    badge.textContent = 'Carregando escalas.csv automaticamente...';
+  }
+
+  fetch('./escalas.csv', { cache: 'no-store' })
+    .then(resp => {
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return resp.text();
+    })
+    .then(csvText => {
+      document.getElementById('loadedFileLabel').textContent = '📄 escalas.csv (auto)';
+      processCSV(csvText);
+      if (badge) {
+        badge.textContent = '✅ escalas.csv carregado automaticamente';
+      }
+    })
+    .catch(err => {
+      console.error('Erro ao carregar escalas.csv:', err);
+      if (badge) {
+        badge.textContent = '❌ Falha no auto-carregamento';
+      }
+    });
+});
+
+  
 // ===================== FILE INPUT =====================
 document.getElementById('csvFileInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
